@@ -191,6 +191,7 @@ export class SlotMachineScene extends PIXI.Container {
     #spinButton;          // PIXI.DisplayObject — your UI button
     #isSpinning = false;
     #playerBalance = new PlayerBalance(2000); // Starting balance for the player
+    #stake = 100; // Fixed bet amount per spin
 
     constructor(app, screenWidth, screenHeight, startSeed) {
         super();
@@ -208,6 +209,7 @@ export class SlotMachineScene extends PIXI.Container {
     }
 
     async #showPlayerBalance() {
+        this.removeChild(...this.children.filter(child => child instanceof PIXI.Text)); // Clear old balance text
         const balanceText = new PIXI.Text(`Balance: $${this.#playerBalance.getBalance()}`, {
             fontFamily: 'Arial',
             fontSize: 24,
@@ -276,18 +278,32 @@ export class SlotMachineScene extends PIXI.Container {
     }
 
     async spin(data) {
-        console.log('Spinning with data:', data);
+        for (let i = 0; i < this.#reels.length; i++) {
+            this.#reels[i].setAnimation('static'); // Set to static for spin
+        }
+        console.log('Spinning with data:', data[0], 'Win amount:', data[1]);
+        this.#playerBalance.updateBalance(-this.#stake); 
+        this.#showPlayerBalance(); // Update balance display immediately after betting
         let minSpins = [];
         for (let i = 0; i < this.#reels.length; i++) {
             const minSpin = 8 + Math.floor(Math.random() * 5);
-            this.#reels[i].spin(minSpin, data[i], 5 + i);
+            this.#reels[i].spin(minSpin, data[0][i], 5 + i);
         }
         await new Promise(resolve => setTimeout(resolve, 5000 + this.#reels.length * 1000)); // Wait for all reels to finish
         this.#isSpinning = false;
+        if (data[1] > 0) {
+            for (let i = 0; i < this.#reels.length; i++) {
+                this.#reels[i].setAnimation('win');
+            }
+            this.#playerBalance.updateBalance(data[1]);
+            this.#showPlayerBalance();
+        }
     }
 
     getData(){
-        return data[Math.floor(Math.random() * data.length)].response.results.symbolIDs;
+        let index = Math.floor(Math.random() * data.length);
+        let result = [data[index].response.results.symbolIDs, data[index].response.results.win];
+        return result;
     }
 }
 

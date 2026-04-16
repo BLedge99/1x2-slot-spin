@@ -20,7 +20,7 @@ export class Reel extends PIXI.Container {
 
         for (let i = 0; i < 6; i++) {
             const symbol = await symbolLoader.loadSymbol(i);
-            symbol.state.setAnimation(0, 'win', true);
+            symbol.state.setAnimation(0, 'static', true);
             let offset = ((i - startSymbolID + 6) % 6);
             if (offset > 3) offset -= 6; // Adjust offset to be between -3 and +3
             symbol.x = 200
@@ -38,7 +38,7 @@ export class Reel extends PIXI.Container {
         for (let lap = 0; lap < numLaps; lap++) {
             for (let i = 0; i < 6; i++) {
                 const symbol = await symbolLoader.loadSymbol(i);
-                symbol.state.setAnimation(0, 'win', true);
+                symbol.state.setAnimation(0, 'static', true);
                 symbol.x = 200;
 
                 // Place each symbol in a long vertical strip
@@ -78,6 +78,18 @@ export class Reel extends PIXI.Container {
                     resolve();
                 }
             });
+        });
+    }
+
+    setAnimation(animationName) {
+        this.children.forEach(symbol => {
+            if (!symbol?.state?.setAnimation) return;
+
+            if (animationName === 'win') {
+                symbol.state.setAnimation(0, 'win', true);
+            } else {
+                symbol.state.setAnimation(0, 'static', true);
+            }
         });
     }
 

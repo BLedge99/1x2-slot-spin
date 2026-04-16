@@ -241,7 +241,7 @@ window.addEventListener('load', function() {
 
     async function testSingleSymbol(i) {
         const symbolOne = await symbolLoader.loadSymbol(i);
-        symbolOne.state.setAnimation(0, 'win', true);
+        symbolOne.state.setAnimation(0, 'static', true);
         symbolOne.x = 200; // Position symbols across the screen
         symbolOne.y = 540; // Center vertically
         app.stage.addChild(symbolOne);
@@ -299,6 +299,7 @@ window.addEventListener('load', function() {
     }
 
     showSlotMachine();
+
 
 });
 
