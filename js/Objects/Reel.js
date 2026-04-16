@@ -4,7 +4,6 @@ export class Reel extends PIXI.Container {
     #screenHeight;
     #startSymbolID;
     #spacing = 400; // px height of each symbol slot — tune to your spine sizes
-    #spinAmnt = 10;
     constructor(app, screenHeight, startSymbolID) {
         super();
         this.app = app;
@@ -14,6 +13,7 @@ export class Reel extends PIXI.Container {
         console.log('Reel created with startSymbolID:', this.#startSymbolID);
     }
 
+    // Draw the initial 6 symbols based on the starting symbol ID
     async #drawSymbols(startSymbolID) {
         const symbolLoader = new SymbolLoader(this.app);
         const middleHeight = this.#screenHeight / 2;
@@ -30,6 +30,7 @@ export class Reel extends PIXI.Container {
         
     }
 
+    // Add required number of symbol laps before the spin starts to ensure smooth animation without needing to load on the fly
     async #addSymbols(numLaps) {
         const symbolLoader = new SymbolLoader(this.app);
         const middleY = this.#screenHeight / 2;
@@ -50,6 +51,7 @@ export class Reel extends PIXI.Container {
         }
     }
 
+    //Animates the reel spinning to a target symbol ID with a minimum number of spins (full cycles) before landing on the target
     async spin(minSpin, spinToSymbolID, duration = 3) {
         // 1. Calculate how many full symbol steps we need to move
         const extraSteps = (spinToSymbolID - this.#startSymbolID + 6) % 6;
@@ -81,6 +83,7 @@ export class Reel extends PIXI.Container {
         });
     }
 
+    //Set animation for all symbols in the reel (e.g. 'win' or 'static')
     setAnimation(animationName) {
         this.children.forEach(symbol => {
             if (!symbol?.state?.setAnimation) return;
@@ -93,6 +96,7 @@ export class Reel extends PIXI.Container {
         });
     }
 
+    // Helper method to calculate the total number of symbol steps needed to spin from the current symbol to the target symbol with a minimum number of spins
     calculateSpin(minSpin, spinToSymbolID) {
         return minSpin + (spinToSymbolID - this.#startSymbolID + 6) % 6;
     }
