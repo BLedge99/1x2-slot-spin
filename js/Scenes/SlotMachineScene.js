@@ -189,6 +189,7 @@ export class SlotMachineScene extends PIXI.Container {
     #startSeed = [0, 1, 2, 3] // Starting symbols for each reel (0-5)
     #reels = [];
     #spinButton;          // PIXI.DisplayObject — your UI button
+    #stakeInput;          // PIXI.DisplayObject — your UI element for adjusting bet amount
     #isSpinning = false;
     #playerBalance = new PlayerBalance(2000); // Starting balance for the player
     #stake = 100; // Fixed bet amount per spin
@@ -226,14 +227,14 @@ export class SlotMachineScene extends PIXI.Container {
 
     // Build a simple spin button with hover effects and click handler to trigger the spin
     async #buildSpinButton() {
-        const container = new PIXI.Container();
+        this.#spinButton = new PIXI.Container();
 
         // Background
         const bg = new PIXI.Graphics();
         bg.beginFill(0x191515);
         bg.drawRoundedRect(0, 0, 120, 50, 10);
         bg.endFill();
-        container.addChild(bg);
+        this.#spinButton.addChild(bg);
 
         // Text
         const text = new PIXI.Text('SPIN', {
@@ -245,28 +246,28 @@ export class SlotMachineScene extends PIXI.Container {
         text.anchor.set(0.5);
         text.x = 60;
         text.y = 25;
-        container.addChild(text);
+        this.#spinButton.addChild(text);
 
         // Make it interactive
-        container.interactive = true;
-        container.buttonMode = true;   // cursor: pointer
+        this.#spinButton.interactive = true;
+        this.#spinButton.buttonMode = true;   // cursor: pointer
 
         // Hover effects
-        container.on('pointerover', () => { bg.tint = 0x0056b3; });
-        container.on('pointerout', () => { bg.tint = 0x007BFF; });
-        container.on('pointerdown', () => {
+        this.#spinButton.on('pointerover', () => { bg.tint = 0x0056b3; });
+        this.#spinButton.on('pointerout', () => { bg.tint = 0x007BFF; });
+        this.#spinButton.on('pointerdown', () => {
             if (!this.#isSpinning) {
                 this.#isSpinning = true;
+                this.#disableInput(true); // Disable stake input while spinning
                 this.spin(this.getData());
             }
         });
 
         // Position
-        container.x = 180;
-        container.y = this.screenHeight / 2 - 80; // Position above the stake input
+        this.#spinButton.x = 180;
+        this.#spinButton.y = this.screenHeight / 2 - 80; // Position above the stake input
 
-        this.addChild(container);
-        this.#spinButton = container;
+        this.addChild(this.#spinButton);
     }
 
     // Initialize the reels with the starting symbols and position them on the screen
@@ -287,14 +288,14 @@ export class SlotMachineScene extends PIXI.Container {
     async #buildStakeInput() {
         // Optional: Implement a UI element to allow the player to change their bet amount
         // This could be a simple text input or buttons to increase/decrease the stake
-        const container = new PIXI.Container();
+        this.#stakeInput = new PIXI.Container();
 
         // Background
         const bg = new PIXI.Graphics();
         bg.beginFill(0x191515);
         bg.drawRoundedRect(0, 0, 150, 50, 10);
         bg.endFill();
-        container.addChild(bg);
+        this.#stakeInput.addChild(bg);
 
         // Text
         const text = new PIXI.Text(`Stake: $${this.#stake}`, {
@@ -306,7 +307,7 @@ export class SlotMachineScene extends PIXI.Container {
         text.anchor.set(0.5);
         text.x = 75;
         text.y = 25;
-        container.addChild(text);
+        this.#stakeInput.addChild(text);
 
         //Minus Button
         const minusButton = new PIXI.Text('-', {
@@ -326,7 +327,7 @@ export class SlotMachineScene extends PIXI.Container {
                 text.text = `Stake: $${this.#stake}`;
             }
         });
-        container.addChild(minusButton);
+        this.#stakeInput.addChild(minusButton);
         //Plus Button
         const plusButton = new PIXI.Text('+', {
             fontFamily: 'Arial',
@@ -345,11 +346,11 @@ export class SlotMachineScene extends PIXI.Container {
                 text.text = `Stake: $${this.#stake}`;
             }
         });
-        container.addChild(plusButton); 
+        this.#stakeInput.addChild(plusButton); 
         // Position
-        container.x = 170;
-        container.y = this.screenHeight / 2 ;
-        this.addChild(container);
+        this.#stakeInput.x = 170;
+        this.#stakeInput.y = this.screenHeight / 2 ;
+        this.addChild(this.#stakeInput);
     }
 
     //Animates the reels spinning to a target symbol ID with a minimum number of spins (full cycles) before landing on the target, then updates the player balance based on the win amount and shows win animations if applicable
@@ -366,6 +367,7 @@ export class SlotMachineScene extends PIXI.Container {
             this.#reels[i].spin(minSpin, data[0][i], 5 + i);
         }
         await new Promise(resolve => setTimeout(resolve, 5000 + this.#reels.length * 1000)); // Wait for all reels to finish
+        this.#disableInput(false); // Re-enable input after spin is complete
         this.#isSpinning = false;
         if (data[1] > 0) {
             for (let i = 0; i < this.#reels.length; i++) {
@@ -375,6 +377,18 @@ export class SlotMachineScene extends PIXI.Container {
             this.#showPlayerBalance();
         }
     }
+
+    #disableInput(disable) {
+        if (this.#stakeInput) {
+            this.#stakeInput.interactiveChildren = !disable;
+            this.#stakeInput.alpha = disable ? 0.5 : 1; // Visual feedback for disabled state
+        }
+        if (this.#spinButton) {
+            this.#spinButton.interactiveChildren = !disable;
+            this.#spinButton.alpha = disable ? 0.5 : 1; // Visual feedback for disabled state
+        }
+    }
+
 
     // Helper method to get random spin result data (symbol IDs and win amount) from the predefined dataset
     getData(){

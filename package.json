@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "local": "http-server -p 80 -o /index.html",
+    "local": "vite --port 8080",
     "dev": "vite"
   },
   "repository": {

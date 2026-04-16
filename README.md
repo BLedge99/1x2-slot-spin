@@ -1,3 +1,7 @@
+---------------------------------------------------------------------
+-I have added vite for easier development, to run, use "npm run dev"
+---------------------------------------------------------------------
+
 # Task
 
 Given a set of symbol assets and dummy responses create your own very simple slot machine
