@@ -202,6 +202,7 @@ export class SlotMachineScene extends PIXI.Container {
         this.ready = this.#setScene();
     }
 
+    // Set up the slot machine scene: initialize reels, build UI, and show player balance
     async #setScene() {
         await this.#initReels();
         await this.#buildSpinButton();
@@ -209,6 +210,7 @@ export class SlotMachineScene extends PIXI.Container {
         await this.#buildStakeInput();
     }
 
+    // Helper method to update the displayed player balance
     async #showPlayerBalance() {
         this.removeChild(...this.children.filter(child => child instanceof PIXI.Text)); // Clear old balance text
         const balanceText = new PIXI.Text(`Balance: $${this.#playerBalance.getBalance()}`, {
@@ -222,6 +224,7 @@ export class SlotMachineScene extends PIXI.Container {
 
     }
 
+    // Build a simple spin button with hover effects and click handler to trigger the spin
     async #buildSpinButton() {
         const container = new PIXI.Container();
 
@@ -265,6 +268,8 @@ export class SlotMachineScene extends PIXI.Container {
         this.addChild(container);
         this.#spinButton = container;
     }
+
+    // Initialize the reels with the starting symbols and position them on the screen
     async #initReels() {
         const reelCount = 4;
         const reelSpacing = this.screenWidth / (reelCount + 1);
@@ -278,6 +283,7 @@ export class SlotMachineScene extends PIXI.Container {
         }
     }
 
+    // Build a simple UI element to allow the player to adjust their bet amount (stake) with plus and minus buttons
     async #buildStakeInput() {
         // Optional: Implement a UI element to allow the player to change their bet amount
         // This could be a simple text input or buttons to increase/decrease the stake
@@ -346,6 +352,7 @@ export class SlotMachineScene extends PIXI.Container {
         this.addChild(container);
     }
 
+    //Animates the reels spinning to a target symbol ID with a minimum number of spins (full cycles) before landing on the target, then updates the player balance based on the win amount and shows win animations if applicable
     async spin(data) {
         for (let i = 0; i < this.#reels.length; i++) {
             this.#reels[i].setAnimation('static'); // Set to static for spin
@@ -369,6 +376,7 @@ export class SlotMachineScene extends PIXI.Container {
         }
     }
 
+    // Helper method to get random spin result data (symbol IDs and win amount) from the predefined dataset
     getData(){
         let index = Math.floor(Math.random() * data.length);
         let result = [data[index].response.results.symbolIDs, data[index].response.results.win];

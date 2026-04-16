@@ -52,16 +52,12 @@ export class SymbolLoader {
         });
     }
 
-    /**
-     * Creates a new Spine instance from loaded resources
-     */
+    // Helper method to create a new Spine instance from loaded resource
     createSpineInstance(resource) {
         return new PIXI.spine.Spine(resource.spineData);
     }
 
-    /**
-     * Clones a Spine instance (important because you usually want multiple symbols on screen)
-     */
+    //Create a clone of the spine instance to allow multiple instances of the same symbol
     cloneSpine(originalSpine) {
         const clone = new PIXI.spine.Spine(originalSpine.spineData);
         // Copy common properties if needed
@@ -70,18 +66,4 @@ export class SymbolLoader {
         clone.scale.set(originalSpine.scale.x, originalSpine.scale.y);
         return clone;
     }
-
-    /**
-     * Optional: Preload all symbols at once (good for loading screen)
-     */
-    async preloadAll() {
-        const promises = [];
-        for (let i = 0; i <= 5; i++) {
-            promises.push(this.loadSymbol(i));
-        }
-        await Promise.all(promises);
-        console.log('All 6 symbols preloaded successfully');
-    }
-
-    
 }
