@@ -191,8 +191,8 @@ export class SlotMachineScene extends PIXI.Container {
     #spinButton;          // PIXI.DisplayObject — your UI button
     #stakeInput;          // PIXI.DisplayObject — your UI element for adjusting bet amount
     #isSpinning = false;
-    #playerBalance = new PlayerBalance(2000); // Starting balance for the player
-    #stake = 100; // Fixed bet amount per spin
+    #playerBalance = new PlayerBalance(100); // Starting balance for the player
+    #stake = 5; // Fixed bet amount per spin
 
     constructor(app, screenWidth, screenHeight, startSeed) {
         super();
@@ -219,7 +219,7 @@ export class SlotMachineScene extends PIXI.Container {
             fontSize: 40,
             fill: 0xf7f02a
         });
-        balanceText.x = 120;
+        balanceText.x = 130;
         balanceText.y = this.screenHeight / 2 + 60; // Position below the stake input
         this.addChild(balanceText);
 
@@ -322,8 +322,8 @@ export class SlotMachineScene extends PIXI.Container {
         minusButton.interactive = true;
         minusButton.buttonMode = true;
         minusButton.on('pointerdown', () => {
-            if (this.#stake > 100) {
-                this.#stake -= 100;
+            if (this.#stake > 1) {
+                this.#stake -= 1;
                 text.text = `Stake: $${this.#stake}`;
             }
         });
@@ -341,8 +341,8 @@ export class SlotMachineScene extends PIXI.Container {
         plusButton.interactive = true;
         plusButton.buttonMode = true;
         plusButton.on('pointerdown', () => {
-            if (this.#stake < 1000) {
-                this.#stake += 100;
+            if (this.#stake < 10) {
+                this.#stake += 1;
                 text.text = `Stake: $${this.#stake}`;
             }
         });
