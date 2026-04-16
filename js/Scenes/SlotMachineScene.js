@@ -286,8 +286,6 @@ export class SlotMachineScene extends PIXI.Container {
 
     // Build a simple UI element to allow the player to adjust their bet amount (stake) with plus and minus buttons
     async #buildStakeInput() {
-        // Optional: Implement a UI element to allow the player to change their bet amount
-        // This could be a simple text input or buttons to increase/decrease the stake
         this.#stakeInput = new PIXI.Container();
 
         // Background
@@ -377,7 +375,8 @@ export class SlotMachineScene extends PIXI.Container {
             this.#showPlayerBalance();
         }
     }
-
+    
+    // Helper method to disable or enable user input on the spin button and stake input during the spin animation to prevent multiple spins at once or changing stake mid-spin
     #disableInput(disable) {
         if (this.#stakeInput) {
             this.#stakeInput.interactiveChildren = !disable;
@@ -388,7 +387,6 @@ export class SlotMachineScene extends PIXI.Container {
             this.#spinButton.alpha = disable ? 0.5 : 1; // Visual feedback for disabled state
         }
     }
-
 
     // Helper method to get random spin result data (symbol IDs and win amount) from the predefined dataset
     getData(){
