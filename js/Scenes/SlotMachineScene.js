@@ -206,17 +206,18 @@ export class SlotMachineScene extends PIXI.Container {
         await this.#initReels();
         await this.#buildSpinButton();
         await this.#showPlayerBalance();
+        await this.#buildStakeInput();
     }
 
     async #showPlayerBalance() {
         this.removeChild(...this.children.filter(child => child instanceof PIXI.Text)); // Clear old balance text
         const balanceText = new PIXI.Text(`Balance: $${this.#playerBalance.getBalance()}`, {
-            fontFamily: 'Arial',
-            fontSize: 24,
-            fill: 0xFFFFFF
+            fontFamily: 'Orbitron',
+            fontSize: 40,
+            fill: 0xf7f02a
         });
-        balanceText.x = 10;
-        balanceText.y = 10;
+        balanceText.x = 120;
+        balanceText.y = this.screenHeight / 2 + 60; // Position below the stake input
         this.addChild(balanceText);
 
     }
@@ -226,7 +227,7 @@ export class SlotMachineScene extends PIXI.Container {
 
         // Background
         const bg = new PIXI.Graphics();
-        bg.beginFill(0x007BFF);
+        bg.beginFill(0x191515);
         bg.drawRoundedRect(0, 0, 120, 50, 10);
         bg.endFill();
         container.addChild(bg);
@@ -235,7 +236,7 @@ export class SlotMachineScene extends PIXI.Container {
         const text = new PIXI.Text('SPIN', {
             fontFamily: 'Arial',
             fontSize: 24,
-            fill: 0xFFFFFF,
+            fill: 0x2ffce1,
             align: 'center'
         });
         text.anchor.set(0.5);
@@ -258,8 +259,8 @@ export class SlotMachineScene extends PIXI.Container {
         });
 
         // Position
-        container.x = (this.screenWidth - 120) / 2;
-        container.y = this.screenHeight - 100;
+        container.x = 180;
+        container.y = this.screenHeight / 2 - 80; // Position above the stake input
 
         this.addChild(container);
         this.#spinButton = container;
@@ -275,6 +276,74 @@ export class SlotMachineScene extends PIXI.Container {
             this.addChild(reel);
             this.#reels.push(reel);
         }
+    }
+
+    async #buildStakeInput() {
+        // Optional: Implement a UI element to allow the player to change their bet amount
+        // This could be a simple text input or buttons to increase/decrease the stake
+        const container = new PIXI.Container();
+
+        // Background
+        const bg = new PIXI.Graphics();
+        bg.beginFill(0x191515);
+        bg.drawRoundedRect(0, 0, 150, 50, 10);
+        bg.endFill();
+        container.addChild(bg);
+
+        // Text
+        const text = new PIXI.Text(`Stake: $${this.#stake}`, {
+            fontFamily: 'Arial',
+            fontSize: 24,
+            fill: 0x2ffce1,
+            align: 'center'
+        });
+        text.anchor.set(0.5);
+        text.x = 75;
+        text.y = 25;
+        container.addChild(text);
+
+        //Minus Button
+        const minusButton = new PIXI.Text('-', {
+            fontFamily: 'Arial',
+            fontSize: 30,
+            fill: 0xFFFFFF,
+            align: 'center'
+        });
+        minusButton.anchor.set(0.5);
+        minusButton.x = -30;
+        minusButton.y = 25;
+        minusButton.interactive = true;
+        minusButton.buttonMode = true;
+        minusButton.on('pointerdown', () => {
+            if (this.#stake > 100) {
+                this.#stake -= 100;
+                text.text = `Stake: $${this.#stake}`;
+            }
+        });
+        container.addChild(minusButton);
+        //Plus Button
+        const plusButton = new PIXI.Text('+', {
+            fontFamily: 'Arial',
+            fontSize: 30,
+            fill: 0xFFFFFF,
+            align: 'center'
+        });
+        plusButton.anchor.set(0.5);
+        plusButton.x = 180;
+        plusButton.y = 25;
+        plusButton.interactive = true;
+        plusButton.buttonMode = true;
+        plusButton.on('pointerdown', () => {
+            if (this.#stake < 1000) {
+                this.#stake += 100;
+                text.text = `Stake: $${this.#stake}`;
+            }
+        });
+        container.addChild(plusButton); 
+        // Position
+        container.x = 170;
+        container.y = this.screenHeight / 2 ;
+        this.addChild(container);
     }
 
     async spin(data) {
